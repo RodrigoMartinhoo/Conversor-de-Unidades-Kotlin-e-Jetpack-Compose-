@@ -58,10 +58,11 @@ fun ConversorUnidades(){
             categoriaSelecionada = it
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         when (categoriaSelecionada) {
             "Temperatura" -> ConversorTemperatura()
+            "Comprimento" -> ConversorComprimento()
         }
     }
 
@@ -142,6 +143,57 @@ fun converterTemperatura(valor: Double, de: String, para: String): Double {
     }
 }
 
+@Composable
+fun ConversorComprimento(){
+    val unidades = listOf("Centímetros", "Metros", "Quilómetros", "Milhas")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.height(8.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null) {
+                converterComprimento(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+        }) {
+            Text("Converter")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Resultado: $resultado")
+    }
+}
+
+fun converterComprimento(valor: Double, de: String, para: String): Double {
+    val metros = when (de) {
+        "Metros" -> valor
+        "Quilómetros" -> valor * 1000
+        "Centímetros" -> valor / 100
+        "Milhas" -> valor * 1609.34
+        else -> valor
+    }
+    return when (para) {
+        "Metros" -> metros
+        "Quilómetros" -> metros / 1000
+        "Centímetros" -> metros * 100
+        "Milhas" -> metros / 1609.34
+        else -> metros
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
