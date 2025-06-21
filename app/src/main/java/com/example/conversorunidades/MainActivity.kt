@@ -14,7 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +60,9 @@ fun ConversorUnidades(){
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        when (categoriaSelecionada) {
+            "Temperatura" -> ConversorTemperatura()
+        }
     }
 
 
@@ -86,6 +89,59 @@ fun Seletor(label: String, opcoes: List<String>, selecionado: String, aoSelecion
         }
     }
 }
+
+@Composable
+fun ConversorTemperatura(){
+    val unidades = listOf("Celsius", "Fahrenheit", "Kelvin")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.height(8.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null){
+                converterTemperatura(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+
+        }) {
+            Text("Converter")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Resultado: $resultado")
+
+    }
+}
+
+fun converterTemperatura(valor: Double, de: String, para: String): Double {
+    val celsius = when (de) {
+        "Celsius" -> valor
+        "Fahrenheit" -> (valor - 32) * 5 / 9
+        "Kelvin" -> valor - 273.15
+        else -> valor
+    }
+    return when (para) {
+        "Celsius" -> celsius
+        "Fahrenheit" -> celsius * 9 / 5 + 32
+        "Kelvin" -> celsius + 273.15
+        else -> celsius
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
