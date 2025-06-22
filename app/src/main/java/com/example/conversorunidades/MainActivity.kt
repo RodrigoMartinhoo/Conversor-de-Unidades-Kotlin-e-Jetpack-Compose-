@@ -6,10 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -44,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ConversorUnidades(){
-    val categorias = listOf("Temperatura", "Comprimento", "Hora", "Peso", "Ângulo", "Área")
+    val categorias = listOf("Temperatura", "Comprimento", "Tempo", "Peso", "Ângulo", "Área")
     var categoriaSelecionada by remember { mutableStateOf(categorias[0]) }
 
     Column (modifier = Modifier.padding(16.dp)) {
@@ -63,6 +65,7 @@ fun ConversorUnidades(){
         when (categoriaSelecionada) {
             "Temperatura" -> ConversorTemperatura()
             "Comprimento" -> ConversorComprimento()
+            "Tempo" -> ConversorTempo()
         }
     }
 
@@ -192,6 +195,52 @@ fun converterComprimento(valor: Double, de: String, para: String): Double {
         "Centímetros" -> metros * 100
         "Milhas" -> metros / 1609.34
         else -> metros
+    }
+}
+
+@Composable
+fun ConversorTempo() {
+    val unidades = listOf("Horas", "Minutos", "Segundos")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.width(8.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null) {
+                converterTempo(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+        }) {
+            Text("Converter")
+        }
+        Text("Resultado: $resultado")
+    }
+}
+
+fun converterTempo(valor: Double, de: String, para: String): Double {
+    val segundos = when (de) {
+        "Horas" -> valor * 3600
+        "Minutos" -> valor * 60
+        "Segundos" -> valor
+        else -> valor
+    }
+    return when (para) {
+        "Horas" -> segundos / 3600
+        "Minutos" -> segundos / 60
+        "Segundos" -> segundos
+        else -> segundos
     }
 }
 
