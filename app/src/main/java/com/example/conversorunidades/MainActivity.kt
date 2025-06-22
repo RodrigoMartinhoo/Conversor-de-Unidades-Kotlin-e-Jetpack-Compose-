@@ -67,6 +67,7 @@ fun ConversorUnidades(){
             "Comprimento" -> ConversorComprimento()
             "Tempo" -> ConversorTempo()
             "Peso" -> ConversorPeso()
+            "Ângulo" -> ConversorAngulo()
         }
     }
 
@@ -294,6 +295,52 @@ fun converterPeso(valor: Double, de: String, para: String): Double {
         "Toneladas" -> gramas / 1_000_000
         "Libras" -> gramas / 453.592
         else -> gramas
+    }
+}
+
+@Composable
+fun ConversorAngulo() {
+    val unidades = listOf("Graus", "Radianos")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.width(35.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null) {
+                converterAngulo(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+        }) {
+            Text("Converter")
+        }
+        Text("Resultado: $resultado")
+    }
+}
+
+fun converterAngulo(valor: Double, de: String, para: String): Double {
+    val graus = when (de) {
+        "Graus" -> valor
+        "Radianos" -> Math.toDegrees(valor)
+        else -> valor
+    }
+    return when (para) {
+        "Graus" -> graus
+        "Radianos" -> Math.toRadians(graus)
+        else -> graus
     }
 }
 
