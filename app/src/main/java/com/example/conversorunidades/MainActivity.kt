@@ -68,6 +68,7 @@ fun ConversorUnidades(){
             "Tempo" -> ConversorTempo()
             "Peso" -> ConversorPeso()
             "Ângulo" -> ConversorAngulo()
+            "Área" -> ConversorArea()
         }
     }
 
@@ -307,11 +308,9 @@ fun ConversorAngulo() {
     var resultado by remember { mutableStateOf("") }
 
     Column {
-
         Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.width(35.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-
 
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -341,6 +340,55 @@ fun converterAngulo(valor: Double, de: String, para: String): Double {
         "Graus" -> graus
         "Radianos" -> Math.toRadians(graus)
         else -> graus
+    }
+}
+
+
+@Composable
+fun ConversorArea() {
+    val unidades = listOf("cm²", "m²", "km²", "hectares")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.width(8.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null) {
+                converterArea(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+        }) {
+            Text("Converter")
+        }
+        Text("Resultado: $resultado")
+    }
+}
+
+fun converterArea(valor: Double, de: String, para: String): Double {
+    val m2 = when (de) {
+        "m²" -> valor
+        "cm²" -> valor / 10000
+        "km²" -> valor * 1000000
+        "hectares" -> valor * 10000
+        else -> valor
+    }
+    return when (para) {
+        "m²" -> m2
+        "cm²" -> m2 * 10000
+        "km²" -> m2 / 1000000
+        "hectares" -> m2 / 10000
+        else -> m2
     }
 }
 
