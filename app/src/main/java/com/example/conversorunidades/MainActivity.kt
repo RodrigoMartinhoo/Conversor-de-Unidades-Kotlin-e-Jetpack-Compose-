@@ -66,6 +66,7 @@ fun ConversorUnidades(){
             "Temperatura" -> ConversorTemperatura()
             "Comprimento" -> ConversorComprimento()
             "Tempo" -> ConversorTempo()
+            "Peso" -> ConversorPeso()
         }
     }
 
@@ -241,6 +242,58 @@ fun converterTempo(valor: Double, de: String, para: String): Double {
         "Minutos" -> segundos / 60
         "Segundos" -> segundos
         else -> segundos
+    }
+}
+
+
+@Composable
+fun ConversorPeso() {
+    val unidades = listOf("Gramas", "Quilogramas", "Toneladas", "Libras")
+    var deUnidade by remember { mutableStateOf(unidades[0]) }
+    var paraUnidade by remember { mutableStateOf(unidades[1]) }
+    var valorInserido by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
+
+    Column {
+        Seletor("De", unidades, deUnidade) { deUnidade = it }
+        Spacer(modifier = Modifier.width(8.dp))
+        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = valorInserido,
+            onValueChange = { valorInserido = it },
+            label = { Text("Valor") }
+        )
+
+        Button(onClick = {
+            val valor = valorInserido.toDoubleOrNull()
+            resultado = if (valor != null) {
+                converterPeso(valor, deUnidade, paraUnidade).toString()
+            } else "Valor inválido"
+        }) {
+            Text("Converter")
+        }
+
+        Text("Resultado: $resultado")
+    }
+}
+
+fun converterPeso(valor: Double, de: String, para: String): Double {
+    val gramas = when (de) {
+        "Gramas" -> valor
+        "Quilogramas" -> valor * 1000
+        "Toneladas" -> valor * 1_000_000
+        "Libras" -> valor * 453.592
+        else -> valor
+    }
+    return when (para) {
+        "Gramas" -> gramas
+        "Quilogramas" -> gramas / 1000
+        "Toneladas" -> gramas / 1_000_000
+        "Libras" -> gramas / 453.592
+        else -> gramas
     }
 }
 
