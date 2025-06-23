@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.example.conversorunidades.ui.theme.ConversorUnidadesTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 
 
@@ -139,7 +142,29 @@ fun ConversorGeral(
                 resultado = ""
                 valorInserido = ""
             }
+
             Spacer(modifier = Modifier.width(30.dp))
+
+            Column {
+                Spacer(modifier = Modifier.height(22.dp))
+
+                IconButton(onClick = {
+                    val temp = deUnidade
+                    deUnidade = paraUnidade
+                    paraUnidade = temp
+                    resultado = ""
+                    valorInserido = ""
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_trocar),
+                        contentDescription = "Trocar unidades"
+                    )
+
+                }
+            }
+
+            Spacer(modifier = Modifier.width(30.dp))
+
             Seletor("Para", unidades, paraUnidade) {
                 paraUnidade = it
                 resultado = ""
