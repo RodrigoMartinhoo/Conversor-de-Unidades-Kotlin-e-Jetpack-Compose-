@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -27,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.conversorunidades.ui.theme.ConversorUnidadesTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +51,7 @@ class MainActivity : ComponentActivity() {
 fun ConversorUnidades(){
     val categorias = listOf("Temperatura", "Comprimento", "Tempo", "Peso", "Ângulo", "Área")
     var categoriaSelecionada by remember { mutableStateOf(categorias[0]) }
+    val historico = remember { mutableStateListOf<String>() }
 
     Column (modifier = Modifier.padding(16.dp)) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -63,12 +67,21 @@ fun ConversorUnidades(){
         Spacer(modifier = Modifier.height(50.dp))
 
         when (categoriaSelecionada) {
-            "Temperatura" -> ConversorTemperatura()
-            "Comprimento" -> ConversorComprimento()
-            "Tempo" -> ConversorTempo()
-            "Peso" -> ConversorPeso()
-            "Ângulo" -> ConversorAngulo()
-            "Área" -> ConversorArea()
+            "Temperatura" -> ConversorTemperatura(historico = historico)
+            "Comprimento" -> ConversorComprimento(historico = historico)
+            "Tempo" -> ConversorTempo(historico = historico)
+            "Peso" -> ConversorPeso(historico = historico)
+            "Ângulo" -> ConversorAngulo(historico = historico)
+            "Área" -> ConversorArea(historico = historico)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Histórico:", style = MaterialTheme.typography.titleMedium)
+        LazyColumn {
+            items(historico.reversed()) { linha ->
+                Text("• $linha", modifier = Modifier.padding(4.dp))
+            }
         }
     }
 
@@ -98,7 +111,7 @@ fun Seletor(label: String, opcoes: List<String>, selecionado: String, aoSelecion
 }
 
 @Composable
-fun ConversorTemperatura(){
+fun ConversorTemperatura(historico: SnapshotStateList<String>){
     val unidades = listOf("Celsius", "Fahrenheit", "Kelvin")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -123,7 +136,7 @@ fun ConversorTemperatura(){
             resultado = if (valor != null){
                 converterTemperatura(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
-
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
@@ -150,7 +163,7 @@ fun converterTemperatura(valor: Double, de: String, para: String): Double {
 }
 
 @Composable
-fun ConversorComprimento(){
+fun ConversorComprimento(historico: SnapshotStateList<String>){
     val unidades = listOf("Centímetros", "Metros", "Quilómetros", "Milhas")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -175,6 +188,7 @@ fun ConversorComprimento(){
             resultado = if (valor != null) {
                 converterComprimento(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
@@ -202,7 +216,7 @@ fun converterComprimento(valor: Double, de: String, para: String): Double {
 }
 
 @Composable
-fun ConversorTempo() {
+fun ConversorTempo(historico: SnapshotStateList<String>) {
     val unidades = listOf("Horas", "Minutos", "Segundos")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -225,6 +239,7 @@ fun ConversorTempo() {
             resultado = if (valor != null) {
                 converterTempo(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
@@ -249,7 +264,7 @@ fun converterTempo(valor: Double, de: String, para: String): Double {
 
 
 @Composable
-fun ConversorPeso() {
+fun ConversorPeso(historico: SnapshotStateList<String>) {
     val unidades = listOf("Gramas", "Quilogramas", "Toneladas", "Libras")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -274,6 +289,7 @@ fun ConversorPeso() {
             resultado = if (valor != null) {
                 converterPeso(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
@@ -300,7 +316,7 @@ fun converterPeso(valor: Double, de: String, para: String): Double {
 }
 
 @Composable
-fun ConversorAngulo() {
+fun ConversorAngulo(historico: SnapshotStateList<String>) {
     val unidades = listOf("Graus", "Radianos")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -323,6 +339,7 @@ fun ConversorAngulo() {
             resultado = if (valor != null) {
                 converterAngulo(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
@@ -345,7 +362,7 @@ fun converterAngulo(valor: Double, de: String, para: String): Double {
 
 
 @Composable
-fun ConversorArea() {
+fun ConversorArea(historico: SnapshotStateList<String>) {
     val unidades = listOf("cm²", "m²", "km²", "hectares")
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
@@ -368,6 +385,7 @@ fun ConversorArea() {
             resultado = if (valor != null) {
                 converterArea(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
+            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
         }) {
             Text("Converter")
         }
