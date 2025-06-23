@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.conversorunidades.ui.theme.ConversorUnidadesTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.text.font.FontWeight
 
 
 class MainActivity : ComponentActivity() {
@@ -53,18 +54,18 @@ fun ConversorUnidades(){
     var categoriaSelecionada by remember { mutableStateOf(categorias[0]) }
     val historico = remember { mutableStateListOf<String>() }
 
-    Column (modifier = Modifier.padding(16.dp)) {
-        Spacer(modifier = Modifier.height(16.dp))
+    Column (modifier = Modifier.padding(20.dp)) {
+        Spacer(modifier = Modifier.height(30.dp))
 
-        Text("Conversor de Unidades", style = MaterialTheme.typography.headlineSmall)
+        Text("Conversor de Unidades", style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.SemiBold))
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(35.dp))
 
         Seletor("Categoria", categorias, categoriaSelecionada){
             categoriaSelecionada = it
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(75.dp))
 
         when (categoriaSelecionada) {
             "Temperatura" -> ConversorTemperatura(historico = historico)
@@ -75,7 +76,7 @@ fun ConversorUnidades(){
             "Área" -> ConversorArea(historico = historico)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Text("Histórico:", style = MaterialTheme.typography.titleMedium)
         LazyColumn {
@@ -98,6 +99,7 @@ fun Seletor(label: String, opcoes: List<String>, selecionado: String, aoSelecion
             Button(onClick = { expandido = true}) {
                 Text(selecionado)
             }
+
             DropdownMenu(expanded = expandido, onDismissRequest = { expandido = false}) {
                 opcoes.forEach {
                     DropdownMenuItem(text = { Text(it) }, onClick = {
@@ -119,18 +121,22 @@ fun ConversorTemperatura(historico: SnapshotStateList<String>){
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.height(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
             resultado = if (valor != null){
@@ -141,8 +147,8 @@ fun ConversorTemperatura(historico: SnapshotStateList<String>){
             Text("Converter")
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Resultado: $resultado")
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
 
     }
 }
@@ -171,18 +177,22 @@ fun ConversorComprimento(historico: SnapshotStateList<String>){
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.height(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
             resultado = if (valor != null) {
@@ -193,8 +203,8 @@ fun ConversorComprimento(historico: SnapshotStateList<String>){
             Text("Converter")
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Resultado: $resultado")
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -224,16 +234,22 @@ fun ConversorTempo(historico: SnapshotStateList<String>) {
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.width(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
             resultado = if (valor != null) {
@@ -243,7 +259,9 @@ fun ConversorTempo(historico: SnapshotStateList<String>) {
         }) {
             Text("Converter")
         }
-        Text("Resultado: $resultado")
+
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -272,17 +290,21 @@ fun ConversorPeso(historico: SnapshotStateList<String>) {
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.width(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
@@ -294,7 +316,8 @@ fun ConversorPeso(historico: SnapshotStateList<String>) {
             Text("Converter")
         }
 
-        Text("Resultado: $resultado")
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -302,14 +325,14 @@ fun converterPeso(valor: Double, de: String, para: String): Double {
     val gramas = when (de) {
         "Gramas" -> valor
         "Quilogramas" -> valor * 1000
-        "Toneladas" -> valor * 1_000_000
+        "Toneladas" -> valor * 1000000
         "Libras" -> valor * 453.592
         else -> valor
     }
     return when (para) {
         "Gramas" -> gramas
         "Quilogramas" -> gramas / 1000
-        "Toneladas" -> gramas / 1_000_000
+        "Toneladas" -> gramas / 1000000
         "Libras" -> gramas / 453.592
         else -> gramas
     }
@@ -324,16 +347,22 @@ fun ConversorAngulo(historico: SnapshotStateList<String>) {
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.width(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
             resultado = if (valor != null) {
@@ -343,7 +372,9 @@ fun ConversorAngulo(historico: SnapshotStateList<String>) {
         }) {
             Text("Converter")
         }
-        Text("Resultado: $resultado")
+
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -370,16 +401,22 @@ fun ConversorArea(historico: SnapshotStateList<String>) {
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        Seletor("De", unidades, deUnidade) { deUnidade = it }
-        Spacer(modifier = Modifier.width(8.dp))
-        Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        Row {
+            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Spacer(modifier = Modifier.width(30.dp))
+            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = valorInserido,
             onValueChange = { valorInserido = it },
             label = { Text("Valor") }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
             resultado = if (valor != null) {
@@ -389,7 +426,9 @@ fun ConversorArea(historico: SnapshotStateList<String>) {
         }) {
             Text("Converter")
         }
-        Text("Resultado: $resultado")
+
+        Spacer(modifier = Modifier.height(35.dp))
+        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
     }
 }
 
