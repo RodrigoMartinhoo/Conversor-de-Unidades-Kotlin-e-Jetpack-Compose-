@@ -68,13 +68,14 @@ fun ConversorUnidades(){
         Spacer(modifier = Modifier.height(75.dp))
 
         when (categoriaSelecionada) {
-            "Temperatura" -> ConversorTemperatura(historico = historico)
-            "Comprimento" -> ConversorComprimento(historico = historico)
-            "Tempo" -> ConversorTempo(historico = historico)
-            "Peso" -> ConversorPeso(historico = historico)
-            "Ângulo" -> ConversorAngulo(historico = historico)
-            "Área" -> ConversorArea(historico = historico)
+            "Temperatura" -> ConversorGeral(listOf("Celsius", "Fahrenheit", "Kelvin"), ::converterTemperatura, historico)
+            "Comprimento" -> ConversorGeral(listOf("Centímetros", "Metros", "Quilómetros", "Milhas"), ::converterComprimento, historico)
+            "Tempo" -> ConversorGeral(listOf("Horas", "Minutos", "Segundos"), ::converterTempo, historico)
+            "Peso" -> ConversorGeral(listOf("Gramas", "Quilogramas", "Toneladas", "Libras"), ::converterPeso, historico)
+            "Ângulo" -> ConversorGeral(listOf("Graus", "Radianos"), ::converterAngulo, historico)
+            "Área" -> ConversorGeral(listOf("cm²", "m²", "km²", "hectares"), ::converterArea, historico)
         }
+
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -84,6 +85,13 @@ fun ConversorUnidades(){
                 Text("• $linha", modifier = Modifier.padding(4.dp))
             }
         }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Button(onClick = { historico.clear() }) {
+            Text("Limpar Histórico")
+        }
+
     }
 
 
@@ -95,7 +103,7 @@ fun Seletor(label: String, opcoes: List<String>, selecionado: String, aoSelecion
 
     Column {
         Text(label)
-        Box() {
+        Box {
             Button(onClick = { expandido = true}) {
                 Text(selecionado)
             }
@@ -112,9 +120,13 @@ fun Seletor(label: String, opcoes: List<String>, selecionado: String, aoSelecion
     }
 }
 
+
 @Composable
-fun ConversorTemperatura(historico: SnapshotStateList<String>){
-    val unidades = listOf("Celsius", "Fahrenheit", "Kelvin")
+fun ConversorGeral(
+    unidades: List<String>,
+    converter: (Double, String, String) -> Double,
+    historico: SnapshotStateList<String>
+) {
     var deUnidade by remember { mutableStateOf(unidades[0]) }
     var paraUnidade by remember { mutableStateOf(unidades[1]) }
     var valorInserido by remember { mutableStateOf("") }
@@ -122,16 +134,27 @@ fun ConversorTemperatura(historico: SnapshotStateList<String>){
 
     Column {
         Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
+            Seletor("De", unidades, deUnidade) {
+                deUnidade = it
+                resultado = ""
+                valorInserido = ""
+            }
             Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
+            Seletor("Para", unidades, paraUnidade) {
+                paraUnidade = it
+                resultado = ""
+                valorInserido = ""
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = valorInserido,
-            onValueChange = { valorInserido = it },
+            onValueChange = {
+                valorInserido = it
+                resultado = ""
+                            },
             label = { Text("Valor") }
         )
 
@@ -139,19 +162,22 @@ fun ConversorTemperatura(historico: SnapshotStateList<String>){
 
         Button(onClick = {
             val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null){
-                converterTemperatura(valor, deUnidade, paraUnidade).toString()
+            resultado = if (valor != null) {
+                converter(valor, deUnidade, paraUnidade).toString()
             } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
+
+            if (resultado != "Valor inválido") historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
+
         }) {
             Text("Converter")
         }
 
         Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
+        Text("Resultado: $resultado ${if (resultado !="" && resultado != "Valor inválido") " $paraUnidade" else ""}", style = MaterialTheme.typography.titleMedium)
 
     }
 }
+
 
 fun converterTemperatura(valor: Double, de: String, para: String): Double {
     val celsius = when (de) {
@@ -168,45 +194,6 @@ fun converterTemperatura(valor: Double, de: String, para: String): Double {
     }
 }
 
-@Composable
-fun ConversorComprimento(historico: SnapshotStateList<String>){
-    val unidades = listOf("Centímetros", "Metros", "Quilómetros", "Milhas")
-    var deUnidade by remember { mutableStateOf(unidades[0]) }
-    var paraUnidade by remember { mutableStateOf(unidades[1]) }
-    var valorInserido by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
-
-    Column {
-        Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
-            Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = valorInserido,
-            onValueChange = { valorInserido = it },
-            label = { Text("Valor") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = {
-            val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null) {
-                converterComprimento(valor, deUnidade, paraUnidade).toString()
-            } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
-        }) {
-            Text("Converter")
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
-    }
-}
 
 fun converterComprimento(valor: Double, de: String, para: String): Double {
     val metros = when (de) {
@@ -225,45 +212,6 @@ fun converterComprimento(valor: Double, de: String, para: String): Double {
     }
 }
 
-@Composable
-fun ConversorTempo(historico: SnapshotStateList<String>) {
-    val unidades = listOf("Horas", "Minutos", "Segundos")
-    var deUnidade by remember { mutableStateOf(unidades[0]) }
-    var paraUnidade by remember { mutableStateOf(unidades[1]) }
-    var valorInserido by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
-
-    Column {
-        Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
-            Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = valorInserido,
-            onValueChange = { valorInserido = it },
-            label = { Text("Valor") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = {
-            val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null) {
-                converterTempo(valor, deUnidade, paraUnidade).toString()
-            } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
-        }) {
-            Text("Converter")
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
-    }
-}
 
 fun converterTempo(valor: Double, de: String, para: String): Double {
     val segundos = when (de) {
@@ -280,46 +228,6 @@ fun converterTempo(valor: Double, de: String, para: String): Double {
     }
 }
 
-
-@Composable
-fun ConversorPeso(historico: SnapshotStateList<String>) {
-    val unidades = listOf("Gramas", "Quilogramas", "Toneladas", "Libras")
-    var deUnidade by remember { mutableStateOf(unidades[0]) }
-    var paraUnidade by remember { mutableStateOf(unidades[1]) }
-    var valorInserido by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
-
-    Column {
-        Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
-            Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = valorInserido,
-            onValueChange = { valorInserido = it },
-            label = { Text("Valor") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = {
-            val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null) {
-                converterPeso(valor, deUnidade, paraUnidade).toString()
-            } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
-        }) {
-            Text("Converter")
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
-    }
-}
 
 fun converterPeso(valor: Double, de: String, para: String): Double {
     val gramas = when (de) {
@@ -338,45 +246,6 @@ fun converterPeso(valor: Double, de: String, para: String): Double {
     }
 }
 
-@Composable
-fun ConversorAngulo(historico: SnapshotStateList<String>) {
-    val unidades = listOf("Graus", "Radianos")
-    var deUnidade by remember { mutableStateOf(unidades[0]) }
-    var paraUnidade by remember { mutableStateOf(unidades[1]) }
-    var valorInserido by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
-
-    Column {
-        Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
-            Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = valorInserido,
-            onValueChange = { valorInserido = it },
-            label = { Text("Valor") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = {
-            val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null) {
-                converterAngulo(valor, deUnidade, paraUnidade).toString()
-            } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
-        }) {
-            Text("Converter")
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
-    }
-}
 
 fun converterAngulo(valor: Double, de: String, para: String): Double {
     val graus = when (de) {
@@ -391,46 +260,6 @@ fun converterAngulo(valor: Double, de: String, para: String): Double {
     }
 }
 
-
-@Composable
-fun ConversorArea(historico: SnapshotStateList<String>) {
-    val unidades = listOf("cm²", "m²", "km²", "hectares")
-    var deUnidade by remember { mutableStateOf(unidades[0]) }
-    var paraUnidade by remember { mutableStateOf(unidades[1]) }
-    var valorInserido by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
-
-    Column {
-        Row {
-            Seletor("De", unidades, deUnidade) { deUnidade = it }
-            Spacer(modifier = Modifier.width(30.dp))
-            Seletor("Para", unidades, paraUnidade) { paraUnidade = it }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = valorInserido,
-            onValueChange = { valorInserido = it },
-            label = { Text("Valor") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = {
-            val valor = valorInserido.toDoubleOrNull()
-            resultado = if (valor != null) {
-                converterArea(valor, deUnidade, paraUnidade).toString()
-            } else "Valor inválido"
-            historico.add("$valorInserido $deUnidade → $resultado $paraUnidade")
-        }) {
-            Text("Converter")
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-        Text("Resultado: $resultado", style = MaterialTheme.typography.titleMedium)
-    }
-}
 
 fun converterArea(valor: Double, de: String, para: String): Double {
     val m2 = when (de) {
