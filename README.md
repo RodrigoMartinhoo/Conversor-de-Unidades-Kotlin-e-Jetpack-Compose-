@@ -24,10 +24,12 @@ Aplicação Android desenvolvida com Jetpack Compose que permite converter unida
 
   📥 Passos para abrir o projeto
 
-  1. Abra o Android Studio
-  2. Clique em "Abrir" ou "Open an Existing Project"
-  3. Navegue até à pasta onde se encontra o projeto 'ConversorUnidades'
-  4. Selecione a pasta e clique em "OK"
+  1. Baixe o ficheiro ZIP, clone do projeto.
+  2. Extraia o conteudo de dentro do ficheiro ZIP
+  3. Abra o Android Studio
+  4. Clique em "Abrir" ou "Open an Existing Project"
+  5. Navegue até à pasta onde se encontra o projeto 'Conversor-de-Unidades-Kotlin-e-Jetpack-Compose-master'
+  6. Selecione a pasta e clique em "OK"
 
 ---
 
